@@ -38,9 +38,10 @@ const mockTikTokPosts = [
 async function fetchTikTokData(profileUrl, accessToken) {
     try {
         console.log(`Fetching TikTok data for: ${profileUrl}`);
-        const rawPosts = accessToken
-            ? await fetchTikTokRealtime(profileUrl, accessToken)
-            : mockTikTokPosts;
+        if (!accessToken) {
+            throw new Error("TikTok access token not provided. Real profile data cannot be fetched without a valid TikTok API access token.");
+        }
+        const rawPosts = await fetchTikTokRealtime(profileUrl, accessToken);
         const posts = rawPosts.map((post) => {
             const totalEngagement = (post.digg_count ?? 0) +
                 (post.comment_count ?? 0) +
@@ -88,8 +89,7 @@ async function fetchTikTokData(profileUrl, accessToken) {
 async function fetchTikTokRealtime(profileUrl, accessToken) {
     try {
         if (!accessToken) {
-            console.warn("TikTok access token not provided, using mock data");
-            return mockTikTokPosts;
+            throw new Error("TikTok access token is required to fetch live post data.");
         }
         const response = await fetch(`https://open.tiktokapis.com/v1/video/list?access_token=${encodeURIComponent(accessToken)}`, {
             cache: "no-store",

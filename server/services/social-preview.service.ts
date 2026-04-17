@@ -147,8 +147,14 @@ export async function fetchSocialPreviewByUrl(
     );
   } else if (detectedPlatform === "tiktok") {
     stats = await fetchTikTokData(profileUrl, process.env.TIKTOK_ACCESS_TOKEN);
+  } else if (detectedPlatform === "linkedin") {
+    throw new Error(
+      "LinkedIn preview is not currently supported for real profile fetching.",
+    );
   } else {
-    stats = createLinkedInStats(profileUrl);
+    throw new Error(
+      `Preview for platform '${detectedPlatform}' is not supported.`,
+    );
   }
 
   return {

@@ -119,8 +119,11 @@ async function fetchSocialPreviewByUrl(url) {
     else if (detectedPlatform === "tiktok") {
         stats = await (0, tiktok_service_1.fetchTikTokData)(profileUrl, process.env.TIKTOK_ACCESS_TOKEN);
     }
+    else if (detectedPlatform === "linkedin") {
+        throw new Error("LinkedIn preview is not currently supported for real profile fetching.");
+    }
     else {
-        stats = createLinkedInStats(profileUrl);
+        throw new Error(`Preview for platform '${detectedPlatform}' is not supported.`);
     }
     return {
         platform: detectedPlatform,

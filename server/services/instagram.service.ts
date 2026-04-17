@@ -41,9 +41,13 @@ export async function fetchInstagramData(
   try {
     console.log(`Fetching Instagram data for: ${profileUrl}`);
 
-    const rawPosts = accessToken
-      ? await fetchInstagramRealtime(profileUrl, accessToken)
-      : mockInstagramPosts;
+    if (!accessToken) {
+      throw new Error(
+        "Instagram access token not provided. Real profile data cannot be fetched without a valid Instagram API access token.",
+      );
+    }
+
+    const rawPosts = await fetchInstagramRealtime(profileUrl, accessToken);
 
     const posts = rawPosts.map((post): SocialMediaPost => {
       const totalEngagement =
@@ -97,8 +101,9 @@ export async function fetchInstagramRealtime(
 ): Promise<InstagramPostData[]> {
   try {
     if (!accessToken) {
-      console.warn("Instagram access token not provided, using mock data");
-      return mockInstagramPosts;
+      throw new Error(
+        "Instagram access token is required to fetch live post data.",
+      );
     }
 
     const url = `https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count&access_token=${encodeURIComponent(

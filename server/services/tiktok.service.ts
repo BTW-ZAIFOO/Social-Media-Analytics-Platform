@@ -45,9 +45,13 @@ export async function fetchTikTokData(
   try {
     console.log(`Fetching TikTok data for: ${profileUrl}`);
 
-    const rawPosts = accessToken
-      ? await fetchTikTokRealtime(profileUrl, accessToken)
-      : mockTikTokPosts;
+    if (!accessToken) {
+      throw new Error(
+        "TikTok access token not provided. Real profile data cannot be fetched without a valid TikTok API access token.",
+      );
+    }
+
+    const rawPosts = await fetchTikTokRealtime(profileUrl, accessToken);
 
     const posts = rawPosts.map((post): SocialMediaPost => {
       const totalEngagement =
@@ -102,8 +106,9 @@ export async function fetchTikTokRealtime(
 ): Promise<TikTokPostData[]> {
   try {
     if (!accessToken) {
-      console.warn("TikTok access token not provided, using mock data");
-      return mockTikTokPosts;
+      throw new Error(
+        "TikTok access token is required to fetch live post data.",
+      );
     }
 
     const response = await fetch(

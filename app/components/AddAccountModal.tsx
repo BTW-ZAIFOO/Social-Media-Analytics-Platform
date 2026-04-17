@@ -52,6 +52,40 @@ export default function AddAccountModal({
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [lastPreviewedUrl, setLastPreviewedUrl] = useState("");
 
+  const totalLikes = previewResult?.posts.reduce((sum, post) => sum + post.likes, 0) ?? 0;
+  const totalComments =
+    previewResult?.posts.reduce((sum, post) => sum + post.comments, 0) ?? 0;
+  const totalShares =
+    previewResult?.posts.reduce((sum, post) => sum + post.shares, 0) ?? 0;
+  const totalViews =
+    previewResult?.posts.reduce((sum, post) => sum + post.views, 0) ?? 0;
+  const averageEngagement =
+    previewResult && previewResult.posts.length > 0
+      ? previewResult.posts.reduce((sum, post) => sum + post.engagementRate, 0) /
+        previewResult.posts.length
+      : 0;
+
+  const topPostContent = previewResult?.topPosts[0]?.content ?? "";
+  const topPostTopic =
+    topPostContent
+      .split(" ")
+      .slice(0, 5)
+      .join(" ")
+      .replace(/[^a-zA-Z0-9 ]/g, "")
+      .trim() || "your latest topic";
+
+  const postingIdeas = previewResult
+    ? [
+        `Create one more post like your top performing content by focusing on ${
+          topPostContent.toLowerCase().includes("video")
+            ? "short video storytelling"
+            : "strong visuals and a clear call-to-action"
+        }.`,
+        `Repurpose your highest engagement post into a quick update or carousel that highlights the same idea in a fresh format.`,
+        `Ask your audience a simple question around ${topPostTopic} to drive comments and shares.`,
+      ]
+    : [];
+
   useEffect(() => {
     const trimmedUrl = profileUrl.trim();
 
@@ -274,7 +308,7 @@ export default function AddAccountModal({
                     <p className="text-sm text-slate-500">
                       {previewResult.platform.toUpperCase()} profile detected
                     </p>
-                    <div className="mt-4 grid grid-cols-3 gap-3 text-sm text-slate-700">
+                    <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-700">
                       <div className="rounded-2xl bg-slate-50 p-3">
                         <p className="text-xs text-slate-500">Followers</p>
                         <p className="mt-1 font-semibold">
@@ -288,10 +322,40 @@ export default function AddAccountModal({
                         </p>
                       </div>
                       <div className="rounded-2xl bg-slate-50 p-3">
-                        <p className="text-xs text-slate-500">Top posts</p>
+                        <p className="text-xs text-slate-500">Total posts</p>
                         <p className="mt-1 font-semibold">
-                          {previewResult.topPosts.length}
+                          {previewResult.posts.length}
                         </p>
+                      </div>
+                      <div className="rounded-2xl bg-slate-50 p-3">
+                        <p className="text-xs text-slate-500">Average post engagement</p>
+                        <p className="mt-1 font-semibold">
+                          {averageEngagement.toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl bg-white p-4 shadow-sm">
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Performance summary
+                    </h3>
+                    <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-700">
+                      <div className="rounded-2xl bg-slate-50 p-3">
+                        <p className="text-xs text-slate-500">Likes</p>
+                        <p className="mt-1 font-semibold">{totalLikes}</p>
+                      </div>
+                      <div className="rounded-2xl bg-slate-50 p-3">
+                        <p className="text-xs text-slate-500">Comments</p>
+                        <p className="mt-1 font-semibold">{totalComments}</p>
+                      </div>
+                      <div className="rounded-2xl bg-slate-50 p-3">
+                        <p className="text-xs text-slate-500">Shares</p>
+                        <p className="mt-1 font-semibold">{totalShares}</p>
+                      </div>
+                      <div className="rounded-2xl bg-slate-50 p-3">
+                        <p className="text-xs text-slate-500">Views</p>
+                        <p className="mt-1 font-semibold">{totalViews}</p>
                       </div>
                     </div>
                   </div>
@@ -322,6 +386,60 @@ export default function AddAccountModal({
                           No trending posts found for this profile.
                         </p>
                       )}
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl bg-white p-4 shadow-sm">
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Real posts from this profile
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-500">
+                      Showing recent posts and engagement metrics fetched from the profile URL.
+                    </p>
+                    <div className="mt-3 space-y-3">
+                      {previewResult.posts.length > 0 ? (
+                        previewResult.posts.slice(0, 6).map((post) => (
+                          <div
+                            key={post.postId}
+                            className="rounded-2xl border border-slate-200 bg-slate-50 p-3"
+                          >
+                            <p className="text-sm font-semibold text-slate-900">
+                              {post.content.slice(0, 100)}
+                              {post.content.length > 100 ? "..." : ""}
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
+                              <span>Posted {new Date(post.postedAt).toLocaleDateString()}</span>
+                              <span>Likes {post.likes}</span>
+                              <span>Comments {post.comments}</span>
+                              <span>Shares {post.shares}</span>
+                              <span>Views {post.views}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-slate-500">
+                          No posts were returned for this profile.
+                        </p>
+                      )}
+                    </div>
+                    {previewResult.posts.length > 6 && (
+                      <p className="mt-3 text-xs text-slate-500">
+                        Showing latest 6 posts. Add the account to track more history.
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="rounded-3xl bg-white p-4 shadow-sm">
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Next posting ideas
+                    </h3>
+                    <div className="mt-3 space-y-2 text-sm text-slate-700">
+                      {postingIdeas.map((idea, index) => (
+                        <div key={index} className="rounded-2xl bg-slate-50 p-3">
+                          <p className="font-semibold text-slate-900">Idea {index + 1}</p>
+                          <p className="mt-1 text-slate-600">{idea}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
 

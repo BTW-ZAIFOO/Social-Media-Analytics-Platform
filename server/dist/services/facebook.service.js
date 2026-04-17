@@ -33,9 +33,10 @@ const mockFacebookPosts = [
 async function fetchFacebookData(profileUrl, accessToken) {
     try {
         console.log(`Fetching Facebook data for: ${profileUrl}`);
-        const rawPosts = accessToken
-            ? await fetchFacebookRealtime(profileUrl, accessToken)
-            : mockFacebookPosts;
+        if (!accessToken) {
+            throw new Error("Facebook access token not provided. Real profile data cannot be fetched without a valid Facebook API access token.");
+        }
+        const rawPosts = await fetchFacebookRealtime(profileUrl, accessToken);
         const posts = rawPosts.map((post) => {
             const totalEngagement = (post.likes ?? 0) + (post.comments ?? 0) + (post.shares ?? 0);
             return {
@@ -79,8 +80,7 @@ async function fetchFacebookData(profileUrl, accessToken) {
 async function fetchFacebookRealtime(profileUrl, accessToken) {
     try {
         if (!accessToken) {
-            console.warn("Facebook access token not provided, using mock data");
-            return mockFacebookPosts;
+            throw new Error("Facebook access token is required to fetch live post data.");
         }
         const fields = [
             "id",
