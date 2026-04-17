@@ -1,5 +1,5 @@
-import mongoose, { Document } from 'mongoose';
-import type { CampaignPayload } from '../types';
+import mongoose, { Document } from "mongoose";
+import type { CampaignPayload } from "../types";
 
 export interface CampaignDocument extends CampaignPayload, Document {
   roi: number;
@@ -15,7 +15,7 @@ const CampaignSchema = new mongoose.Schema<CampaignDocument>(
     platform: {
       type: String,
       required: true,
-      enum: ['Meta', 'Google', 'TikTok'],
+      enum: ["Meta", "Google", "TikTok"],
     },
     spend: {
       type: Number,
@@ -51,10 +51,10 @@ const CampaignSchema = new mongoose.Schema<CampaignDocument>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
-CampaignSchema.virtual('roi').get(function (this: CampaignDocument) {
+CampaignSchema.virtual("roi").get(function (this: CampaignDocument) {
   if (!this.spend) {
     return 0;
   }
@@ -62,5 +62,7 @@ CampaignSchema.virtual('roi').get(function (this: CampaignDocument) {
   return (this.revenue - this.spend) / this.spend;
 });
 
-const CampaignModel = mongoose.models.Campaign || mongoose.model<CampaignDocument>('Campaign', CampaignSchema);
+const CampaignModel =
+  mongoose.models.Campaign ||
+  mongoose.model<CampaignDocument>("Campaign", CampaignSchema);
 export default CampaignModel;

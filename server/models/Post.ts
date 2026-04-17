@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 export interface PostDocument extends mongoose.Document {
   accountId: string;
-  platform: 'facebook' | 'instagram' | 'tiktok' | 'whatsapp' | 'linkedin';
+  platform: "facebook" | "instagram" | "tiktok" | "whatsapp" | "linkedin";
   postId: string;
   content: string;
   imageUrl?: string;
@@ -23,11 +23,11 @@ const PostSchema = new mongoose.Schema<PostDocument>(
     accountId: {
       type: String,
       required: true,
-      ref: 'SocialAccount',
+      ref: "SocialAccount",
     },
     platform: {
       type: String,
-      enum: ['facebook', 'instagram', 'tiktok', 'whatsapp', 'linkedin'],
+      enum: ["facebook", "instagram", "tiktok", "whatsapp", "linkedin"],
       required: true,
     },
     postId: {
@@ -70,8 +70,9 @@ const PostSchema = new mongoose.Schema<PostDocument>(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const PostModel = mongoose.models.Post || mongoose.model<PostDocument>('Post', PostSchema);
+const PostModel =
+  mongoose.models.Post || mongoose.model<PostDocument>("Post", PostSchema);
 export default PostModel;

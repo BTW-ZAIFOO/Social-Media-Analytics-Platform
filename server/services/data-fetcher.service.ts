@@ -1,13 +1,15 @@
-import type { SocialPlatform } from '../types/index.ts';
-import type { SocialMediaStats } from '../types/social-api.ts';
-import SocialAccount from '../models/SocialAccount.ts';
-import AccountMetrics from '../models/AccountMetrics.ts';
-import Post from '../models/Post.ts';
-import { fetchInstagramData } from './instagram.service.ts';
-import { fetchFacebookData } from './facebook.service.ts';
-import { fetchTikTokData } from './tiktok.service.ts';
+import type { SocialPlatform } from "../types/index.ts";
+import type { SocialMediaStats } from "../types/social-api.ts";
+import SocialAccount from "../models/SocialAccount";
+import AccountMetrics from "../models/AccountMetrics";
+import Post from "../models/Post";
+import { fetchInstagramData } from "./instagram.service";
+import { fetchFacebookData } from "./facebook.service";
+import { fetchTikTokData } from "./tiktok.service";
 
-export async function fetchAndStoreAccountData(accountId: string): Promise<SocialMediaStats | null> {
+export async function fetchAndStoreAccountData(
+  accountId: string,
+): Promise<SocialMediaStats | null> {
   try {
     const account = await SocialAccount.findById(accountId);
     if (!account) {
@@ -15,17 +17,28 @@ export async function fetchAndStoreAccountData(accountId: string): Promise<Socia
       return null;
     }
 
-    console.log(`Fetching data for ${account.platform} account: ${account.name}`);
+    console.log(
+      `Fetching data for ${account.platform} account: ${account.name}`,
+    );
 
     let stats: SocialMediaStats | null = null;
 
     // Fetch data based on platform
-    if (account.platform === 'instagram') {
-      stats = await fetchInstagramData(account.profileUrl ?? '', process.env.INSTAGRAM_ACCESS_TOKEN);
-    } else if (account.platform === 'facebook') {
-      stats = await fetchFacebookData(account.profileUrl ?? '', process.env.FACEBOOK_ACCESS_TOKEN);
-    } else if (account.platform === 'tiktok') {
-      stats = await fetchTikTokData(account.profileUrl ?? '', process.env.TIKTOK_ACCESS_TOKEN);
+    if (account.platform === "instagram") {
+      stats = await fetchInstagramData(
+        account.profileUrl ?? "",
+        process.env.INSTAGRAM_ACCESS_TOKEN,
+      );
+    } else if (account.platform === "facebook") {
+      stats = await fetchFacebookData(
+        account.profileUrl ?? "",
+        process.env.FACEBOOK_ACCESS_TOKEN,
+      );
+    } else if (account.platform === "tiktok") {
+      stats = await fetchTikTokData(
+        account.profileUrl ?? "",
+        process.env.TIKTOK_ACCESS_TOKEN,
+      );
     } else {
       console.warn(`Platform not implemented: ${account.platform}`);
       return null;
@@ -45,10 +58,12 @@ export async function fetchAndStoreAccountData(accountId: string): Promise<Socia
           totalComments: stats.totalComments,
           totalShares: stats.totalShares,
           totalViews: stats.totalViews,
-          averageEngagementRate: stats.posts.reduce((sum, p) => sum + p.engagementRate, 0) / stats.posts.length,
+          averageEngagementRate:
+            stats.posts.reduce((sum, p) => sum + p.engagementRate, 0) /
+            stats.posts.length,
           fetchedAt: new Date(),
         },
-        { upsert: true, new: true }
+        { upsert: true, new: true },
       );
 
       // Store posts
@@ -70,7 +85,7 @@ export async function fetchAndStoreAccountData(accountId: string): Promise<Socia
             engagementRate: post.engagementRate,
             fetchedAt: new Date(),
           },
-          { upsert: true, new: true }
+          { upsert: true, new: true },
         );
       }
 
@@ -94,14 +109,17 @@ export async function fetchAllAccountsData(): Promise<void> {
       try {
         await fetchAndStoreAccountData(account._id.toString());
       } catch (error) {
-        console.error(`Failed to fetch data for account ${account.name}:`, error);
+        console.error(
+          `Failed to fetch data for account ${account.name}:`,
+          error,
+        );
         // Continue with next account
       }
     }
 
-    console.log('Completed fetching data for all accounts');
+    console.log("Completed fetching data for all accounts");
   } catch (error) {
-    console.error('Error fetching all accounts data:', error);
+    console.error("Error fetching all accounts data:", error);
   }
 }
 
@@ -127,11 +145,12 @@ export async function getAccountMetrics(accountId: string) {
   }
 }
 
-export async function getPlatformPosts(platform: SocialPlatform, limit: number = 10) {
+export async function getPlatformPosts(
+  platform: SocialPlatform,
+  limit: number = 10,
+) {
   try {
-    return await Post.find({ platform })
-      .sort({ postedAt: -1 })
-      .limit(limit);
+    return await Post.find({ platform }).sort({ postedAt: -1 }).limit(limit);
   } catch (error) {
     console.error(`Error fetching posts for platform ${platform}:`, error);
     return [];
@@ -143,16 +162,23 @@ export async function getPlatformMetrics(platform: SocialPlatform) {
     const posts = await Post.find({ platform });
     const metrics = await AccountMetrics.find({ platform });
 
-    const totalFollowers = metrics.reduce((sum, metric) => sum + metric.followers, 0);
+    const totalFollowers = metrics.reduce(
+      (sum, metric) => sum + metric.followers,
+      0,
+    );
     const averageEngagement = metrics.length
-      ? metrics.reduce((sum, metric) => sum + metric.engagement, 0) / metrics.length
+      ? metrics.reduce((sum, metric) => sum + metric.engagement, 0) /
+        metrics.length
       : 0;
     const totalLikes = posts.reduce((sum, post) => sum + post.likes, 0);
     const totalComments = posts.reduce((sum, post) => sum + post.comments, 0);
     const totalShares = posts.reduce((sum, post) => sum + post.shares, 0);
     const totalViews = posts.reduce((sum, post) => sum + post.views, 0);
 
-    const trendMap = new Map<string, { date: string; likes: number; comments: number; shares: number }>();
+    const trendMap = new Map<
+      string,
+      { date: string; likes: number; comments: number; shares: number }
+    >();
     for (const post of posts) {
       const day = post.postedAt.toISOString().slice(0, 10);
       const existing = trendMap.get(day);
@@ -161,11 +187,18 @@ export async function getPlatformMetrics(platform: SocialPlatform) {
         existing.comments += post.comments;
         existing.shares += post.shares;
       } else {
-        trendMap.set(day, { date: day, likes: post.likes, comments: post.comments, shares: post.shares });
+        trendMap.set(day, {
+          date: day,
+          likes: post.likes,
+          comments: post.comments,
+          shares: post.shares,
+        });
       }
     }
 
-    const trend = Array.from(trendMap.values()).sort((a, b) => a.date.localeCompare(b.date));
+    const trend = Array.from(trendMap.values()).sort((a, b) =>
+      a.date.localeCompare(b.date),
+    );
 
     return {
       platform,
@@ -194,7 +227,10 @@ export async function getPlatformMetrics(platform: SocialPlatform) {
   }
 }
 
-export async function getPlatformDetail(platform: SocialPlatform, limit: number = 10) {
+export async function getPlatformDetail(
+  platform: SocialPlatform,
+  limit: number = 10,
+) {
   const posts = await getPlatformPosts(platform, limit);
   const metrics = await getPlatformMetrics(platform);
   return { posts, metrics };

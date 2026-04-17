@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function CampaignsPage() {
   return (
@@ -8,7 +8,8 @@ export default function CampaignsPage() {
       <div className="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-10 shadow-xl">
         <h1 className="text-4xl font-bold text-slate-900">Campaigns</h1>
         <p className="mt-4 text-slate-600">
-          This route is not yet implemented in the frontend. For now, use the main dashboard at
+          This route is not yet implemented in the frontend. For now, use the
+          main dashboard at
           <span className="font-semibold text-slate-900"> / </span>.
         </p>
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">

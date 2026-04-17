@@ -1,5 +1,10 @@
-export type PlatformType = 'Meta' | 'Google' | 'TikTok';
-export type SocialPlatform = 'facebook' | 'instagram' | 'tiktok' | 'whatsapp' | 'linkedin';
+export type PlatformType = "Meta" | "Google" | "TikTok";
+export type SocialPlatform =
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "whatsapp"
+  | "linkedin";
 
 export interface CampaignPayload {
   name: string;

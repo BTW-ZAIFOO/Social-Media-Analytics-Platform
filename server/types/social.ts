@@ -1,4 +1,4 @@
-import type { SocialPlatform } from '../types/index.ts';
+import type { SocialPlatform } from "../types/index.ts";
 
 export type SocialPlatformType = SocialPlatform;
 

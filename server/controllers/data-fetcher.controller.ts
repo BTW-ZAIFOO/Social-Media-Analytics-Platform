@@ -1,33 +1,47 @@
-import type { Request, Response, NextFunction } from 'express';
-import type { SocialPlatform } from '../types/index.ts';
+import type { Request, Response, NextFunction } from "express";
+import type { SocialPlatform } from "../types/index.ts";
 import {
   fetchAndStoreAccountData,
   fetchAllAccountsData,
   getAccountPosts,
   getAccountMetrics,
   getPlatformDetail,
-} from '../services/data-fetcher.service.ts';
+} from "../services/data-fetcher.service";
 
-const supportedPlatforms: SocialPlatform[] = ['facebook', 'instagram', 'tiktok', 'whatsapp', 'linkedin'];
+const supportedPlatforms: SocialPlatform[] = [
+  "facebook",
+  "instagram",
+  "tiktok",
+  "whatsapp",
+  "linkedin",
+];
 
-export async function fetchAllAccountsDataHandler(_req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function fetchAllAccountsDataHandler(
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   try {
     await fetchAllAccountsData();
     res.json({
       success: true,
-      message: 'Fetch completed for all accounts',
+      message: "Fetch completed for all accounts",
     });
   } catch (error) {
     next(error);
   }
 }
 
-export async function fetchAccountDataHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function fetchAccountDataHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   try {
     const { accountId } = req.params;
 
     if (!accountId) {
-      res.status(400).json({ error: 'Account ID is required' });
+      res.status(400).json({ error: "Account ID is required" });
       return;
     }
 
@@ -35,13 +49,13 @@ export async function fetchAccountDataHandler(req: Request, res: Response, next:
     const stats = await fetchAndStoreAccountData(accountId);
 
     if (!stats) {
-      res.status(404).json({ error: 'Account not found or fetch failed' });
+      res.status(404).json({ error: "Account not found or fetch failed" });
       return;
     }
 
     res.json({
       success: true,
-      message: 'Data fetch completed successfully',
+      message: "Data fetch completed successfully",
       data: stats,
     });
   } catch (error) {
@@ -49,13 +63,19 @@ export async function fetchAccountDataHandler(req: Request, res: Response, next:
   }
 }
 
-export async function getPlatformDetailHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function getPlatformDetailHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   try {
     const { platform } = req.params as { platform: SocialPlatform };
-    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+    const limit = req.query.limit
+      ? parseInt(req.query.limit as string, 10)
+      : 10;
 
     if (!platform || !supportedPlatforms.includes(platform)) {
-      res.status(400).json({ error: 'Invalid platform' });
+      res.status(400).json({ error: "Invalid platform" });
       return;
     }
 
@@ -66,13 +86,17 @@ export async function getPlatformDetailHandler(req: Request, res: Response, next
   }
 }
 
-export async function getPostsHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function getPostsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   try {
     const { accountId } = req.params;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
     if (!accountId) {
-      res.status(400).json({ error: 'Account ID is required' });
+      res.status(400).json({ error: "Account ID is required" });
       return;
     }
 
@@ -83,19 +107,23 @@ export async function getPostsHandler(req: Request, res: Response, next: NextFun
   }
 }
 
-export async function getMetricsHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function getMetricsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   try {
     const { accountId } = req.params;
 
     if (!accountId) {
-      res.status(400).json({ error: 'Account ID is required' });
+      res.status(400).json({ error: "Account ID is required" });
       return;
     }
 
     const metrics = await getAccountMetrics(accountId);
 
     if (!metrics) {
-      res.status(404).json({ error: 'No metrics found for this account' });
+      res.status(404).json({ error: "No metrics found for this account" });
       return;
     }
 

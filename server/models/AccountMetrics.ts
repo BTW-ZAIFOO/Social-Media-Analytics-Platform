@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 export interface AccountMetricsDocument extends mongoose.Document {
   accountId: string;
-  platform: 'facebook' | 'instagram' | 'tiktok' | 'whatsapp' | 'linkedin';
+  platform: "facebook" | "instagram" | "tiktok" | "whatsapp" | "linkedin";
   followers: number;
   engagement: number;
   totalPosts: number;
@@ -21,11 +21,11 @@ const AccountMetricsSchema = new mongoose.Schema<AccountMetricsDocument>(
     accountId: {
       type: String,
       required: true,
-      ref: 'SocialAccount',
+      ref: "SocialAccount",
     },
     platform: {
       type: String,
-      enum: ['facebook', 'instagram', 'tiktok', 'whatsapp', 'linkedin'],
+      enum: ["facebook", "instagram", "tiktok", "whatsapp", "linkedin"],
       required: true,
     },
     followers: {
@@ -65,10 +65,13 @@ const AccountMetricsSchema = new mongoose.Schema<AccountMetricsDocument>(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const AccountMetricsModel =
   mongoose.models.AccountMetrics ||
-  mongoose.model<AccountMetricsDocument>('AccountMetrics', AccountMetricsSchema);
+  mongoose.model<AccountMetricsDocument>(
+    "AccountMetrics",
+    AccountMetricsSchema,
+  );
 export default AccountMetricsModel;

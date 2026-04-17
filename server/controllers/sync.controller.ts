@@ -1,10 +1,10 @@
-import type { Request, Response, NextFunction } from 'express';
-import Campaign from '../models/Campaign.ts';
-import { getMetaCampaigns } from '../services/meta.service.ts';
-import { getGoogleCampaigns } from '../services/google.service.ts';
-import { getTiktokCampaigns } from '../services/tiktok.service.ts';
-import { normalizeSyncDate } from '../utils/helpers.ts';
-import type { CampaignPayload } from '../types';
+import type { Request, Response, NextFunction } from "express";
+import Campaign from "../models/Campaign";
+import { getMetaCampaigns } from "../services/meta.service";
+import { getGoogleCampaigns } from "../services/google.service";
+import { getTiktokCampaigns } from "../services/tiktok.service";
+import { normalizeSyncDate } from "../utils/helpers";
+import type { CampaignPayload } from "../types";
 
 const normalizeCampaign = (campaign: CampaignPayload) => ({
   name: String(campaign.name).trim(),
@@ -17,7 +17,11 @@ const normalizeCampaign = (campaign: CampaignPayload) => ({
   date: normalizeSyncDate(campaign.date),
 });
 
-export const syncData = async (_req: Request, res: Response, next: NextFunction) => {
+export const syncData = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const [metaData, googleData, tiktokData] = await Promise.all([
       getMetaCampaigns(),
@@ -25,7 +29,9 @@ export const syncData = async (_req: Request, res: Response, next: NextFunction)
       getTiktokCampaigns(),
     ]);
 
-    const allCampaigns = [...metaData, ...googleData, ...tiktokData].map(normalizeCampaign);
+    const allCampaigns = [...metaData, ...googleData, ...tiktokData].map(
+      normalizeCampaign,
+    );
 
     const operations = allCampaigns.map((campaign) => ({
       updateOne: {
@@ -37,7 +43,11 @@ export const syncData = async (_req: Request, res: Response, next: NextFunction)
 
     await Campaign.bulkWrite(operations, { ordered: false });
 
-    res.json({ success: true, message: 'Sync completed successfully.', syncedCount: allCampaigns.length });
+    res.json({
+      success: true,
+      message: "Sync completed successfully.",
+      syncedCount: allCampaigns.length,
+    });
   } catch (error) {
     next(error);
   }

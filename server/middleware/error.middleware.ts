@@ -1,10 +1,15 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from "express";
 
-function errorHandler(err: Error & { statusCode?: number }, _req: Request, res: Response, _next: NextFunction) {
+function errorHandler(
+  err: Error & { statusCode?: number },
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal server error';
+  const message = err.message || "Internal server error";
 
-  console.error('[Error]', err);
+  console.error("[Error]", err);
 
   res.status(statusCode).json({
     success: false,

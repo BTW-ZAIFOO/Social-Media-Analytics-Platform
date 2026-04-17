@@ -1,4 +1,9 @@
-export type SocialPlatform = 'facebook' | 'instagram' | 'tiktok' | 'whatsapp' | 'linkedin';
+export type SocialPlatform =
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "whatsapp"
+  | "linkedin";
 
 export interface SocialAccount {
   id?: string;
@@ -43,7 +48,12 @@ export interface SocialPreview {
   engagement: number;
   posts: SocialPost[];
   topPosts: SocialPost[];
-  trend: Array<{ date: string; likes: number; comments: number; shares: number }>;
+  trend: Array<{
+    date: string;
+    likes: number;
+    comments: number;
+    shares: number;
+  }>;
 }
 
 export interface PlatformDetail {
@@ -57,7 +67,12 @@ export interface PlatformDetail {
     totalComments: number;
     totalShares: number;
     totalViews: number;
-    trend: Array<{ date: string; likes: number; comments: number; shares: number }>;
+    trend: Array<{
+      date: string;
+      likes: number;
+      comments: number;
+      shares: number;
+    }>;
   };
 }
 

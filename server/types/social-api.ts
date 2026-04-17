@@ -1,4 +1,4 @@
-import type { SocialPlatform } from '../types/index.ts';
+import type { SocialPlatform } from "../types/index.ts";
 
 export interface FacebookPostData {
   id: string;
@@ -14,7 +14,7 @@ export interface FacebookPostData {
 export interface InstagramPostData {
   id: string;
   caption: string;
-  media_type: 'IMAGE' | 'VIDEO' | 'CAROUSEL';
+  media_type: "IMAGE" | "VIDEO" | "CAROUSEL";
   media_url?: string;
   video_url?: string;
   like_count: number;

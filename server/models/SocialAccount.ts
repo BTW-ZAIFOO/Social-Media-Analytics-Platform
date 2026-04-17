@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import type { SocialPlatform } from '../types/index.ts';
+import mongoose from "mongoose";
+import type { SocialPlatform } from "../types/index.ts";
 
 export interface SocialAccountDocument extends mongoose.Document {
   platform: SocialPlatform;
@@ -16,7 +16,7 @@ const socialAccountSchema = new mongoose.Schema<SocialAccountDocument>(
   {
     platform: {
       type: String,
-      enum: ['facebook', 'instagram', 'tiktok', 'whatsapp', 'linkedin'],
+      enum: ["facebook", "instagram", "tiktok", "whatsapp", "linkedin"],
       required: true,
     },
     name: {
@@ -26,13 +26,13 @@ const socialAccountSchema = new mongoose.Schema<SocialAccountDocument>(
     profileUrl: {
       type: String,
       required: function () {
-        return this.platform !== 'whatsapp';
+        return this.platform !== "whatsapp";
       },
     },
     phoneNumber: {
       type: String,
       required: function () {
-        return this.platform === 'whatsapp';
+        return this.platform === "whatsapp";
       },
     },
     followers: {
@@ -44,7 +44,10 @@ const socialAccountSchema = new mongoose.Schema<SocialAccountDocument>(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model<SocialAccountDocument>('SocialAccount', socialAccountSchema);
+export default mongoose.model<SocialAccountDocument>(
+  "SocialAccount",
+  socialAccountSchema,
+);

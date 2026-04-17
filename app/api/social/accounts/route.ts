@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const response = await fetch('http://localhost:5001/api/social/accounts', {
-      cache: 'no-store',
+    const response = await fetch("http://localhost:5001/api/social/accounts", {
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -13,7 +13,7 @@ export async function GET() {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching accounts:', error);
+    console.error("Error fetching accounts:", error);
     return NextResponse.json([], { status: 200 });
   }
 }
@@ -22,10 +22,10 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const response = await fetch('http://localhost:5001/api/social/accounts', {
-      method: 'POST',
+    const response = await fetch("http://localhost:5001/api/social/accounts", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
     });
@@ -38,10 +38,10 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('Error creating account:', error);
+    console.error("Error creating account:", error);
     return NextResponse.json(
-      { error: 'Failed to create account' },
-      { status: 500 }
+      { error: "Failed to create account" },
+      { status: 500 },
     );
   }
 }

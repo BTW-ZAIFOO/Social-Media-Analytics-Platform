@@ -1,30 +1,30 @@
-import type { SocialMediaStats, SocialMediaPost } from '../types/social-api.ts';
-import type { SocialPlatform } from '../types/index.ts';
-import { fetchInstagramData } from './instagram.service.ts';
-import { fetchFacebookData } from './facebook.service.ts';
-import { fetchTikTokData } from './tiktok.service.ts';
+import type { SocialMediaStats, SocialMediaPost } from "../types/social-api.ts";
+import type { SocialPlatform } from "../types/index.ts";
+import { fetchInstagramData } from "./instagram.service";
+import { fetchFacebookData } from "./facebook.service";
+import { fetchTikTokData } from "./tiktok.service";
 
 function detectPlatformFromUrl(url: string): SocialPlatform | null {
   const normalized = url.toLowerCase();
 
   if (/instagram\.com/.test(normalized)) {
-    return 'instagram';
+    return "instagram";
   }
 
   if (/facebook\.com|fb\.com/.test(normalized)) {
-    return 'facebook';
+    return "facebook";
   }
 
   if (/tiktok\.com/.test(normalized)) {
-    return 'tiktok';
+    return "tiktok";
   }
 
   if (/linkedin\.com/.test(normalized)) {
-    return 'linkedin';
+    return "linkedin";
   }
 
   if (/whatsapp\.com|wa\.me/.test(normalized)) {
-    return 'whatsapp';
+    return "whatsapp";
   }
 
   return null;
@@ -34,29 +34,35 @@ function normalizeUrl(url: string): string {
   try {
     return new URL(url).toString();
   } catch {
-    return url.startsWith('http') ? url : `https://${url}`;
+    return url.startsWith("http") ? url : `https://${url}`;
   }
 }
 
 function extractNameFromUrl(url: string): string {
   try {
     const parsed = new URL(normalizeUrl(url));
-    const segments = parsed.pathname.split('/').filter((segment) => segment && segment !== 'www');
+    const segments = parsed.pathname
+      .split("/")
+      .filter((segment) => segment && segment !== "www");
     if (segments.length > 0) {
-      return decodeURIComponent(segments[segments.length - 1]).replace(/[-_]/g, ' ');
+      return decodeURIComponent(segments[segments.length - 1]).replace(
+        /[-_]/g,
+        " ",
+      );
     }
   } catch {
     // ignored
   }
 
-  return 'Social Account';
+  return "Social Account";
 }
 
 function createLinkedInStats(profileUrl: string): SocialMediaStats {
   const posts: SocialMediaPost[] = [
     {
-      postId: 'li-post-001',
-      content: 'Professional product update: launching a streamlined analytics workflow.',
+      postId: "li-post-001",
+      content:
+        "Professional product update: launching a streamlined analytics workflow.",
       imageUrl: undefined,
       videoUrl: undefined,
       likes: 120,
@@ -67,8 +73,9 @@ function createLinkedInStats(profileUrl: string): SocialMediaStats {
       engagementRate: 3.1,
     },
     {
-      postId: 'li-post-002',
-      content: 'Driving meaningful growth with data-driven campaigns and team collaboration.',
+      postId: "li-post-002",
+      content:
+        "Driving meaningful growth with data-driven campaigns and team collaboration.",
       imageUrl: undefined,
       videoUrl: undefined,
       likes: 98,
@@ -79,8 +86,9 @@ function createLinkedInStats(profileUrl: string): SocialMediaStats {
       engagementRate: 2.8,
     },
     {
-      postId: 'li-post-003',
-      content: 'Sharing a leadership playbook for scaling digital marketing teams in 2026.',
+      postId: "li-post-003",
+      content:
+        "Sharing a leadership playbook for scaling digital marketing teams in 2026.",
       imageUrl: undefined,
       videoUrl: undefined,
       likes: 145,
@@ -98,7 +106,7 @@ function createLinkedInStats(profileUrl: string): SocialMediaStats {
   const totalViews = posts.reduce((sum, post) => sum + post.views, 0);
 
   return {
-    platform: 'linkedin',
+    platform: "linkedin",
     accountId: profileUrl,
     followers: 1200,
     engagement: 3.4,
@@ -112,20 +120,32 @@ function createLinkedInStats(profileUrl: string): SocialMediaStats {
   };
 }
 
-export async function fetchSocialPreviewByUrl(url: string): Promise<{ platform: SocialPlatform; name: string; stats: SocialMediaStats } | null> {
+export async function fetchSocialPreviewByUrl(
+  url: string,
+): Promise<{
+  platform: SocialPlatform;
+  name: string;
+  stats: SocialMediaStats;
+} | null> {
   const detectedPlatform = detectPlatformFromUrl(url);
-  if (!detectedPlatform || detectedPlatform === 'whatsapp') {
+  if (!detectedPlatform || detectedPlatform === "whatsapp") {
     return null;
   }
 
   const profileUrl = normalizeUrl(url);
   let stats: SocialMediaStats;
 
-  if (detectedPlatform === 'instagram') {
-    stats = await fetchInstagramData(profileUrl, process.env.INSTAGRAM_ACCESS_TOKEN);
-  } else if (detectedPlatform === 'facebook') {
-    stats = await fetchFacebookData(profileUrl, process.env.FACEBOOK_ACCESS_TOKEN);
-  } else if (detectedPlatform === 'tiktok') {
+  if (detectedPlatform === "instagram") {
+    stats = await fetchInstagramData(
+      profileUrl,
+      process.env.INSTAGRAM_ACCESS_TOKEN,
+    );
+  } else if (detectedPlatform === "facebook") {
+    stats = await fetchFacebookData(
+      profileUrl,
+      process.env.FACEBOOK_ACCESS_TOKEN,
+    );
+  } else if (detectedPlatform === "tiktok") {
     stats = await fetchTikTokData(profileUrl, process.env.TIKTOK_ACCESS_TOKEN);
   } else {
     stats = createLinkedInStats(profileUrl);

@@ -1,10 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import type { FormEvent } from 'react';
-import type { SocialPlatform, SocialPreview } from '@/app/types/social';
-import { addSocialAccount, previewSocialAccount } from '@/app/services/social-api';
+import { useState, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+import type { FormEvent } from "react";
+import type { SocialPlatform, SocialPreview } from "@/app/types/social";
+import {
+  addSocialAccount,
+  previewSocialAccount,
+} from "@/app/services/social-api";
 
 interface AddAccountModalProps {
   isOpen: boolean;
@@ -13,36 +24,42 @@ interface AddAccountModalProps {
 }
 
 const platforms: { value: SocialPlatform; label: string }[] = [
-  { value: 'facebook', label: 'Facebook' },
-  { value: 'instagram', label: 'Instagram' },
-  { value: 'tiktok', label: 'TikTok' },
-  { value: 'whatsapp', label: 'WhatsApp' },
-  { value: 'linkedin', label: 'LinkedIn' },
+  { value: "facebook", label: "Facebook" },
+  { value: "instagram", label: "Instagram" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "whatsapp", label: "WhatsApp" },
+  { value: "linkedin", label: "LinkedIn" },
 ];
 
-export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccountModalProps) {
-  const [platform, setPlatform] = useState<SocialPlatform>('facebook');
-  const [name, setName] = useState('');
-  const [profileUrl, setProfileUrl] = useState('');
-  const [followers, setFollowers] = useState('');
-  const [engagement, setEngagement] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+export default function AddAccountModal({
+  isOpen,
+  onClose,
+  onSuccess,
+}: AddAccountModalProps) {
+  const [platform, setPlatform] = useState<SocialPlatform>("facebook");
+  const [name, setName] = useState("");
+  const [profileUrl, setProfileUrl] = useState("");
+  const [followers, setFollowers] = useState("");
+  const [engagement, setEngagement] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [previewResult, setPreviewResult] = useState<SocialPreview | null>(null);
+  const [previewResult, setPreviewResult] = useState<SocialPreview | null>(
+    null,
+  );
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [lastPreviewedUrl, setLastPreviewedUrl] = useState('');
+  const [lastPreviewedUrl, setLastPreviewedUrl] = useState("");
 
   useEffect(() => {
     const trimmedUrl = profileUrl.trim();
 
-    if (platform === 'whatsapp' || !trimmedUrl) {
+    if (platform === "whatsapp" || !trimmedUrl) {
       setPreviewError(null);
       setPreviewResult(null);
       setPreviewLoading(false);
-      setLastPreviewedUrl('');
+      setLastPreviewedUrl("");
       return;
     }
 
@@ -59,12 +76,13 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
         setPreviewResult(preview);
         setLastPreviewedUrl(preview.profileUrl || trimmedUrl);
         setPlatform(preview.platform);
-        setName(preview.name || '');
-        setFollowers(String(preview.followers ?? ''));
-        setEngagement(String(preview.engagement ?? ''));
+        setName(preview.name || "");
+        setFollowers(String(preview.followers ?? ""));
+        setEngagement(String(preview.engagement ?? ""));
         setProfileUrl(preview.profileUrl || trimmedUrl);
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Unable to preview this account';
+        const message =
+          err instanceof Error ? err.message : "Unable to preview this account";
         setPreviewError(message);
         setPreviewResult(null);
       } finally {
@@ -84,30 +102,36 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
 
     // Validate inputs
     if (!name.trim()) {
-      setError('Account name is required');
+      setError("Account name is required");
       return;
     }
-    if (platform !== 'whatsapp' && !profileUrl.trim()) {
-      setError('Profile URL is required');
+    if (platform !== "whatsapp" && !profileUrl.trim()) {
+      setError("Profile URL is required");
       return;
     }
-    if (platform === 'whatsapp' && !phoneNumber.trim()) {
-      setError('WhatsApp number is required');
+    if (platform === "whatsapp" && !phoneNumber.trim()) {
+      setError("WhatsApp number is required");
       return;
     }
     if (!followers || Number(followers) < 0) {
-      setError('Valid follower count is required');
+      setError("Valid follower count is required");
       return;
     }
     if (!engagement || Number(engagement) < 0 || Number(engagement) > 100) {
-      setError('Engagement must be between 0 and 100');
+      setError("Engagement must be between 0 and 100");
       return;
     }
 
     setLoading(true);
 
     try {
-      console.log('Submitting account:', { platform, name, profileUrl, followers, engagement });
+      console.log("Submitting account:", {
+        platform,
+        name,
+        profileUrl,
+        followers,
+        engagement,
+      });
 
       await addSocialAccount({
         platform,
@@ -124,8 +148,9 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
         onSuccess();
       }, 1000);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to add account';
-      console.error('Error adding account:', err);
+      const message =
+        err instanceof Error ? err.message : "Failed to add account";
+      console.error("Error adding account:", err);
       setError(message);
     } finally {
       setLoading(false);
@@ -133,18 +158,18 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
   }
 
   function reset() {
-    setName('');
-    setProfileUrl('');
-    setPhoneNumber('');
-    setFollowers('');
-    setEngagement('');
+    setName("");
+    setProfileUrl("");
+    setPhoneNumber("");
+    setFollowers("");
+    setEngagement("");
     setError(null);
     setSuccess(false);
     setPreviewResult(null);
     setPreviewError(null);
     setPreviewLoading(false);
-    setLastPreviewedUrl('');
-    setPlatform('facebook');
+    setLastPreviewedUrl("");
+    setPlatform("facebook");
   }
 
   if (!isOpen) return null;
@@ -153,7 +178,9 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-8 shadow-2xl">
         <h2 className="text-2xl font-bold text-slate-900">Connect Account</h2>
-        <p className="mt-2 text-sm text-slate-600">Add your social media account to track analytics</p>
+        <p className="mt-2 text-sm text-slate-600">
+          Add your social media account to track analytics
+        </p>
 
         {error && (
           <div className="mt-4 rounded-2xl bg-red-50 p-4 text-sm text-red-700 border border-red-200">
@@ -171,7 +198,9 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-slate-900">Platform</label>
+            <label className="block text-sm font-semibold text-slate-900">
+              Platform
+            </label>
             <select
               value={platform}
               onChange={(e) => setPlatform(e.target.value as SocialPlatform)}
@@ -187,7 +216,9 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-900">Account Name</label>
+            <label className="block text-sm font-semibold text-slate-900">
+              Account Name
+            </label>
             <input
               type="text"
               value={name}
@@ -201,26 +232,28 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
 
           <div>
             <label className="block text-sm font-semibold text-slate-900">
-              {platform === 'whatsapp' ? 'WhatsApp Number' : 'Profile URL'}
+              {platform === "whatsapp" ? "WhatsApp Number" : "Profile URL"}
             </label>
             <input
-              type={platform === 'whatsapp' ? 'tel' : 'url'}
-              value={platform === 'whatsapp' ? phoneNumber : profileUrl}
+              type={platform === "whatsapp" ? "tel" : "url"}
+              value={platform === "whatsapp" ? phoneNumber : profileUrl}
               onChange={(e) => {
-                if (platform === 'whatsapp') {
+                if (platform === "whatsapp") {
                   setPhoneNumber(e.target.value);
                 } else {
                   setProfileUrl(e.target.value);
                 }
               }}
-              placeholder={platform === 'whatsapp' ? '+1234567890' : 'https://...'}
+              placeholder={
+                platform === "whatsapp" ? "+1234567890" : "https://..."
+              }
               disabled={loading}
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 disabled:opacity-60"
               required
             />
           </div>
 
-          {platform !== 'whatsapp' && (
+          {platform !== "whatsapp" && (
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
               {previewLoading ? (
                 <div className="flex items-center gap-3 text-sm text-slate-600">
@@ -232,65 +265,106 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
               ) : previewResult ? (
                 <div className="space-y-4">
                   <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <p className="text-xs uppercase tracking-wide text-slate-600">Auto preview</p>
-                    <p className="mt-2 text-lg font-semibold text-slate-900">{previewResult.name}</p>
-                    <p className="text-sm text-slate-500">{previewResult.platform.toUpperCase()} profile detected</p>
+                    <p className="text-xs uppercase tracking-wide text-slate-600">
+                      Auto preview
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-slate-900">
+                      {previewResult.name}
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      {previewResult.platform.toUpperCase()} profile detected
+                    </p>
                     <div className="mt-4 grid grid-cols-3 gap-3 text-sm text-slate-700">
                       <div className="rounded-2xl bg-slate-50 p-3">
                         <p className="text-xs text-slate-500">Followers</p>
-                        <p className="mt-1 font-semibold">{previewResult.followers}</p>
+                        <p className="mt-1 font-semibold">
+                          {previewResult.followers}
+                        </p>
                       </div>
                       <div className="rounded-2xl bg-slate-50 p-3">
                         <p className="text-xs text-slate-500">Engagement</p>
-                        <p className="mt-1 font-semibold">{previewResult.engagement}%</p>
+                        <p className="mt-1 font-semibold">
+                          {previewResult.engagement}%
+                        </p>
                       </div>
                       <div className="rounded-2xl bg-slate-50 p-3">
                         <p className="text-xs text-slate-500">Top posts</p>
-                        <p className="mt-1 font-semibold">{previewResult.topPosts.length}</p>
+                        <p className="mt-1 font-semibold">
+                          {previewResult.topPosts.length}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <h3 className="text-sm font-semibold text-slate-900">Trending posts</h3>
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Trending posts
+                    </h3>
                     <div className="mt-3 space-y-3">
                       {previewResult.topPosts.length > 0 ? (
                         previewResult.topPosts.map((post) => (
-                          <div key={post.postId} className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-                            <p className="text-sm font-semibold text-slate-900">{post.content.slice(0, 80)}{post.content.length > 80 ? '...' : ''}</p>
-                            <p className="mt-2 text-xs text-slate-500">Likes {post.likes} · Comments {post.comments} · Shares {post.shares}</p>
+                          <div
+                            key={post.postId}
+                            className="rounded-2xl border border-slate-200 bg-slate-50 p-3"
+                          >
+                            <p className="text-sm font-semibold text-slate-900">
+                              {post.content.slice(0, 80)}
+                              {post.content.length > 80 ? "..." : ""}
+                            </p>
+                            <p className="mt-2 text-xs text-slate-500">
+                              Likes {post.likes} · Comments {post.comments} ·
+                              Shares {post.shares}
+                            </p>
                           </div>
                         ))
                       ) : (
-                        <p className="text-sm text-slate-500">No trending posts found for this profile.</p>
+                        <p className="text-sm text-slate-500">
+                          No trending posts found for this profile.
+                        </p>
                       )}
                     </div>
                   </div>
 
                   <div className="rounded-3xl bg-white p-4 shadow-sm">
-                    <h3 className="text-sm font-semibold text-slate-900">Engagement trend</h3>
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      Engagement trend
+                    </h3>
                     <div className="mt-3 h-44">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={previewResult.trend}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                          <XAxis dataKey="date" tick={{ fill: '#475569' }} />
-                          <YAxis tick={{ fill: '#475569' }} />
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke="#e2e8f0"
+                          />
+                          <XAxis dataKey="date" tick={{ fill: "#475569" }} />
+                          <YAxis tick={{ fill: "#475569" }} />
                           <Tooltip />
-                          <Line type="monotone" dataKey="likes" stroke="#2563eb" strokeWidth={2} dot={false} />
+                          <Line
+                            type="monotone"
+                            dataKey="likes"
+                            stroke="#2563eb"
+                            strokeWidth={2}
+                            dot={false}
+                          />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">Paste a social link to auto-fetch profile details and trending post data.</p>
+                <p className="text-sm text-slate-500">
+                  Paste a social link to auto-fetch profile details and trending
+                  post data.
+                </p>
               )}
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-900">Followers</label>
+              <label className="block text-sm font-semibold text-slate-900">
+                Followers
+              </label>
               <input
                 type="number"
                 value={followers}
@@ -303,7 +377,9 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-900">Engagement %</label>
+              <label className="block text-sm font-semibold text-slate-900">
+                Engagement %
+              </label>
               <input
                 type="number"
                 value={engagement}
@@ -342,9 +418,9 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
                   Adding...
                 </>
               ) : success ? (
-                '✓ Added'
+                "✓ Added"
               ) : (
-                'Add Account'
+                "Add Account"
               )}
             </button>
           </div>

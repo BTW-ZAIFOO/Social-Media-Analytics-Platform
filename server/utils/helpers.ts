@@ -1,4 +1,4 @@
-import type { CampaignPayload } from '../types';
+import type { CampaignPayload } from "../types";
 
 export function calculateROI(revenue: number, spend: number): number {
   const revenueValue = Number(revenue || 0);
@@ -11,21 +11,24 @@ export function calculateROI(revenue: number, spend: number): number {
   return (revenueValue - spendValue) / spendValue;
 }
 
-export function buildCsv<T extends Record<string, unknown>>(rows: T[], headers: string[]): string {
+export function buildCsv<T extends Record<string, unknown>>(
+  rows: T[],
+  headers: string[],
+): string {
   const quoted = (value: unknown) => {
-    if (value == null) return '';
+    if (value == null) return "";
     const stringValue = String(value).replace(/"/g, '""');
     return `"${stringValue}"`;
   };
 
-  const csvRows = [headers.map(quoted).join(',')];
+  const csvRows = [headers.map(quoted).join(",")];
 
   rows.forEach((row) => {
     const values = headers.map((header) => quoted(row[header]));
-    csvRows.push(values.join(','));
+    csvRows.push(values.join(","));
   });
 
-  return csvRows.join('\n');
+  return csvRows.join("\n");
 }
 
 export function normalizeSyncDate(date: string | Date): Date {

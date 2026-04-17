@@ -1,8 +1,12 @@
-import type { Request, Response, NextFunction } from 'express';
-import Campaign from '../models/Campaign.ts';
-import { calculateROI, buildCsv } from '../utils/helpers.ts';
+import type { Request, Response, NextFunction } from "express";
+import Campaign from "../models/Campaign";
+import { calculateROI, buildCsv } from "../utils/helpers";
 
-export const downloadReport = async (_req: Request, res: Response, next: NextFunction) => {
+export const downloadReport = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const campaigns = await Campaign.find({}).sort({ date: -1 });
     const csvData = campaigns.map((campaign) => ({
@@ -25,29 +29,42 @@ export const downloadReport = async (_req: Request, res: Response, next: NextFun
         acc.conversions += Number(item.conversions);
         return acc;
       },
-      { spend: 0, revenue: 0, clicks: 0, conversions: 0 }
+      { spend: 0, revenue: 0, clicks: 0, conversions: 0 },
     );
 
     const totalRoi = calculateROI(totals.revenue, totals.spend);
-    const headers = ['name', 'platform', 'spend', 'revenue', 'impressions', 'clicks', 'conversions', 'date', 'roi'];
+    const headers = [
+      "name",
+      "platform",
+      "spend",
+      "revenue",
+      "impressions",
+      "clicks",
+      "conversions",
+      "date",
+      "roi",
+    ];
     const csvRows = buildCsv(csvData, headers);
 
     const totalsRow = [
-      'TOTAL',
-      '',
+      "TOTAL",
+      "",
       totals.spend,
       totals.revenue,
-      '',
+      "",
       totals.clicks,
       totals.conversions,
-      '',
+      "",
       totalRoi.toFixed(4),
     ]
       .map((value) => `"${String(value).replace(/"/g, '""')}"`)
-      .join(',');
+      .join(",");
 
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="campaign-report.csv"');
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="campaign-report.csv"',
+    );
     res.send(`${csvRows}\n${totalsRow}`);
   } catch (error) {
     next(error);

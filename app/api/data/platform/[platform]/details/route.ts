@@ -1,20 +1,23 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export async function GET(
   _request: Request,
-  context: { params: Promise<{ platform: string }> }
+  context: { params: Promise<{ platform: string }> },
 ) {
   const { platform } = await context.params;
   try {
-    const response = await fetch(`http://localhost:5001/api/data/platform/${platform}/details`, {
-      method: 'GET',
-      cache: 'no-store',
-    });
+    const response = await fetch(
+      `http://localhost:5001/api/data/platform/${platform}/details`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
 
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error('Error proxying platform detail request:', error);
+    console.error("Error proxying platform detail request:", error);
     return NextResponse.json(
       {
         posts: [],
@@ -30,7 +33,7 @@ export async function GET(
           trend: [],
         },
       },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }
